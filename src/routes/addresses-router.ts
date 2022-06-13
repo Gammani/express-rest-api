@@ -1,50 +1,38 @@
 import {Request, Response, Router} from "express"
-import {soundsRouter} from "./sounds-router";
+import {addressesRepository} from "../repositories/addresses-repository";
 
-const addresses = [{id: 1, value: 'Nezalejnasti 12'}, {id: 2, value: 'Selickaga 11'}]
 
 export const addressesRouter = Router()
 
 addressesRouter.get('/', (req: Request, res: Response) => {
-    res.send(addresses)
+    const foundAddresses = addressesRepository.findAddresses(req.query.value?.toString())
+    res.send(foundAddresses)
 })
 addressesRouter.get('/:id', (req: Request, res: Response) => {
-    const id = +req.params.id
-    const address = addresses.find(a => a.id === id)
+    const address = addressesRepository.findAddressById(+req.params.id)
     if(address) {
         res.send(address)
     } else {
         res.sendStatus(404)
-    }
-})
-addressesRouter.delete('/:id', (req: Request, res: Response) => {
-    const id = +req.params.id
-    const index = addresses.findIndex(s => s.id === id)
-    if(index === -1) {
-        res.sendStatus(404)
-    } else {
-        res.send(addresses.splice(index, 1))
     }
 })
 addressesRouter.post('/', (req: Request, res: Response) => {
-    const address = {
-        id: +(new Date()),
-        value: req.body.title
-    }
-    addresses.push(address)
-    res.status(201).send(address)
+    const newAddress = addressesRepository.createAddress(req.body.value)
+    res.sendStatus(201).send(newAddress)
 })
 addressesRouter.put('/:id', (req: Request, res: Response) => {
-    // const id = +req.params.id
-    // if(id) {
-    //     res.send(sounds.map(s => s.id === id ? {...s, title: req.body.title} : s))
-    // } else {
-    //     res.status(404)
-    // }
-    let address = addresses.find(s => s.id === +req.params.id)
-    if(address) {
-        address.value = req.body.value
+    const isUpdated = addressesRepository.updateAddress(+req.params.id, req.body.value)
+    if(isUpdated) {
+        const address = addressesRepository.findAddressById(+req.params.id)
         res.send(address)
+    } else {
+        res.send(404)
+    }
+})
+addressesRouter.delete('/:id', (req: Request, res: Response) => {
+    const isDelete = addressesRepository.deleteAddress(+req.params.id)
+    if(isDelete) {
+        res.sendStatus(204)
     } else {
         res.sendStatus(404)
     }

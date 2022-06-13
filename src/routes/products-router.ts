@@ -1,6 +1,7 @@
 import {Request, Response, Router} from 'express'
 import {productsRepository} from "../repositories/products-repository";
 
+
 export const productsRouter = Router({})
 
 productsRouter.get('/', (req: Request, res: Response) => {
@@ -15,10 +16,6 @@ productsRouter.get('/:id', (req: Request, res: Response) => {
         res.sendStatus(404)
     }
 })
-productsRouter.post('/', (req: Request, res: Response) => {
-    const newProduct = productsRepository.creatProduct(req.body.title)
-    res.sendStatus(201).send(newProduct)
-})
 productsRouter.get('/:productTitle', (req: Request, res: Response) => {
     const product = productsRepository.findProductByTitle(req.body.title)
     if (!product) {
@@ -26,6 +23,10 @@ productsRouter.get('/:productTitle', (req: Request, res: Response) => {
     } else {
         res.send(product)
     }
+})
+productsRouter.post('/', (req: Request, res: Response) => {
+    const newProduct = productsRepository.creatProduct(req.body.title)
+    res.sendStatus(201).send(newProduct)
 })
 productsRouter.put('/:id', (req: Request, res: Response) => {
     const isUpdated = productsRepository.updateProduct(+req.params.id, req.body.title)
