@@ -18,6 +18,11 @@ app.get('/', (req, res) => {
 app.use('/products', products_router_1.productsRouter);
 app.use('/addresses', addresses_router_1.addressesRouter);
 app.use('/sounds', sounds_router_1.soundsRouter);
+app.get('/test', (req, res, next) => {
+    req.blabla = "hello";
+    next();
+}, (req, res) => {
+});
 //start app
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
